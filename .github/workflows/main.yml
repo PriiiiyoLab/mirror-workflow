@@ -8,8 +8,7 @@ env:
   GitHubName: ${{ secrets.GitHubName }}
   BotRepoSlug: ${{ secrets.BotRepoSlug }}
   ConfigSlug: ${{ secrets.ConfigSlug }}
-  CredsSlug: ${{ secrets.CredsSlug }}
-  PickleSlug: ${{ secrets.PickleSlug }}
+  CredsSlug: ${{ secrets.RcloneSlug }}
   BotName: Zbot
 
 jobs:
@@ -29,8 +28,7 @@ jobs:
           git clone https://${{ secrets.GH_TOKEN }}@github.com/${BotRepoSlug} --depth 1 botSource
           cd /home/runner/botSource
           curl -sL ${ConfigSlug} -o config.env
-          curl -sL ${CredsSlug} -o credentials.json
-          curl -sL ${PickleSlug} | base64 --decode >> token.pickle
+          curl -sL ${RcloneSlug} -o rclone.conf
       - name: Compile The Mirroring Docker Container
         run: |
           cd /home/runner/botSource
