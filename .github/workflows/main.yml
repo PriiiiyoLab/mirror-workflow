@@ -27,8 +27,8 @@ jobs:
           cd /home/runner
           git clone https://${{ secrets.GH_TOKEN }}@github.com/${BotRepoSlug} --depth 1 botSource
           cd /home/runner/botSource
-          curl -SL ${ConfigSlug} -o config.env
-          curl -SL ${RcloneSlug} -o rclone.conf
+          curl -sl ${ConfigSlug} -o config.env
+          curl -sl ${RcloneSlug} -o rclone.conf
       - name: Compile The Mirroring Docker Container
         run: |
           cd /home/runner/botSource
