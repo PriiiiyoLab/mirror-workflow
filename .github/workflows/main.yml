@@ -1,4 +1,4 @@
-name: MirrorBot CI on Ubuntu
+name: LeechBot CI on Ubuntu
 
 on:
   workflow_dispatch:
@@ -9,7 +9,7 @@ env:
   BotRepoSlug: ${{ secrets.BotRepoSlug }}
   ConfigSlug: ${{ secrets.ConfigSlug }}
   RcloneSlug: ${{ secrets.RcloneSlug }}
-  BotName: Zbot
+  BotName: Lbot
 
 jobs:
   mirror:
@@ -22,6 +22,7 @@ jobs:
           git config --global user.name ${GitHubName}
           git config --global credential.helper store
           echo "https://${GitHubName}:${{ secrets.GH_TOKEN }}@github.com" > ~/.git-credentials
+
       - name: Clone And Prepare The Mirror Repository
         run: |
           cd /home/runner
@@ -29,6 +30,7 @@ jobs:
           cd /home/runner/botSource
           curl -sL ${ConfigSlug} -o config.env
           curl -sL ${RcloneSlug} -o rclone.conf
+
       - name: Compile The Mirroring Docker Container
         run: |
           cd /home/runner/botSource
@@ -36,6 +38,7 @@ jobs:
           docker build . --rm --force-rm --compress --no-cache=true --pull --file Dockerfile -t ${{ secrets.DOCKER_USERNAME }}/mirror-bot:${BotName}
           docker image ls
           docker push ${{ secrets.DOCKER_USERNAME }}/mirror-bot:${BotName}
+
       - name: Run The Mirroring Docker Container w/ Background Cleanup
         continue-on-error: true
         timeout-minutes: 340
@@ -43,6 +46,7 @@ jobs:
           cd /home/runner/botSource
           docker run --privileged --rm -i ${{ secrets.DOCKER_USERNAME }}/mirror-bot:${BotName} &
           curl -sL https://github.com/rokibhasansagar/slimhub_actions/raw/main/cleanup.sh | bash &>/dev/null
+
       - name: Trigger The Looper
         continue-on-error: true
         run: |
