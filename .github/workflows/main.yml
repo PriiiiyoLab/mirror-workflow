@@ -8,7 +8,7 @@ env:
   GitHubName: ${{ secrets.GitHubName }}
   BotRepoSlug: ${{ secrets.BotRepoSlug }}
   ConfigSlug: ${{ secrets.ConfigSlug }}
-  CredsSlug: ${{ secrets.RcloneSlug }}
+  RcloneSlug: ${{ secrets.RcloneSlug }}
   BotName: Zbot
 
 jobs:
