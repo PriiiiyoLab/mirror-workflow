@@ -8,7 +8,8 @@ env:
   GitHubName: ${{ secrets.GitHubName }}
   BotRepoSlug: ${{ secrets.BotRepoSlug }}
   ConfigSlug: ${{ secrets.ConfigSlug }}
-  CreadsSlug: ${{ secrets.CreadsSlug }}
+  CredsSlug: ${{ secrets.CredsSlug }}
+  PickleSlug: ${{ secrets.PickleSlug }}
   BotName: Mbot
 
 jobs:
@@ -22,15 +23,14 @@ jobs:
           git config --global user.name ${GitHubName}
           git config --global credential.helper store
           echo "https://${GitHubName}:${{ secrets.GH_TOKEN }}@github.com" > ~/.git-credentials
-
       - name: Clone And Prepare The Mirror Repository
         run: |
           cd /home/runner
           git clone https://${{ secrets.GH_TOKEN }}@github.com/${BotRepoSlug} --depth 1 botSource
           cd /home/runner/botSource
           curl -sL ${ConfigSlug} -o config.env
-          curl -sL ${RcloneSlug} -o rclone.conf
-
+          curl -sL ${CredsSlug} -o credentials.json
+          curl -sL ${PickleSlug} | base64 --decode >> token.pickle
       - name: Compile The Mirroring Docker Container
         run: |
           cd /home/runner/botSource
@@ -38,7 +38,6 @@ jobs:
           docker build . --rm --force-rm --compress --no-cache=true --pull --file Dockerfile -t ${{ secrets.DOCKER_USERNAME }}/mirror-bot:${BotName}
           docker image ls
           docker push ${{ secrets.DOCKER_USERNAME }}/mirror-bot:${BotName}
-
       - name: Run The Mirroring Docker Container w/ Background Cleanup
         continue-on-error: true
         timeout-minutes: 340
@@ -46,7 +45,6 @@ jobs:
           cd /home/runner/botSource
           docker run --privileged --rm -i ${{ secrets.DOCKER_USERNAME }}/mirror-bot:${BotName} &
           curl -sL https://github.com/rokibhasansagar/slimhub_actions/raw/main/cleanup.sh | bash &>/dev/null
-
       - name: Trigger The Looper
         continue-on-error: true
         run: |
