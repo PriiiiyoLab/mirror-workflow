@@ -10,6 +10,7 @@ env:
   ConfigSlug: ${{ secrets.ConfigSlug }}
   CredsSlug: ${{ secrets.CredsSlug }}
   PickleSlug: ${{ secrets.PickleSlug }}
+  AccountsSlug: ${{ secrets.AccountsSlug }}
   BotName: Mbot
 
 jobs:
@@ -31,6 +32,7 @@ jobs:
           curl -sL ${ConfigSlug} -o config.env
           curl -sL ${CredsSlug} -o credentials.json
           curl -sL ${PickleSlug} | base64 --decode >> token.pickle
+          curl -sL ${AccountsSlug} -o accounts
       - name: Compile The Mirroring Docker Container
         run: |
           cd /home/runner/botSource
